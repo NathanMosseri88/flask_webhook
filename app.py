@@ -24,6 +24,8 @@ def webhook():  # run this function.
 		data = request.get_json()  # get the json body from request
 		file = data.get('file')  # get the value of the key named file
 		requesting_ip = data.get('ip')
+		# password = data.get('password')
+		# print(password)
 		if requesting_ip in WHITE_LIST:  # check if IP address in request is whitelisted
 			# create file path based on operating system - will use correct path separators for whatever system it is running on
 			file_path = os.path.join(os.path.sep, 'Users', 'SimpleToWork', 'Desktop', 'New Projects', "Nathan's", 'webhook_testing', file)
