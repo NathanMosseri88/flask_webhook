@@ -1,4 +1,5 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
+import requests
 import subprocess
 import os
 import json
@@ -22,20 +23,22 @@ WHITE_LIST = get_secrets().get('whitelisted_IPs')
 def webhook():  # run this function.
 	try:
 		data = request.get_json()  # get the json body from request
-		file = data.get('file')  # get the value of the key named file
+		# file = data.get('file')  # get the value of the key named file
 		requesting_ip = data.get('ip')
 		if requesting_ip in WHITE_LIST:  # check if IP address in request is whitelisted
-			# create file path based on operating system - will use correct path separators for whatever system it is running on
-			file_path = os.path.join(os.path.sep, 'Users', 'SimpleToWork', 'Desktop', 'New Projects', "Nathan's", 'webhook_testing', file)
 
-			if os.path.exists(file_path):  # if the path exists
-				print(file_path)
-				result = subprocess.run(["cmd", "/c", file_path])  # run the file
+			servers = data.get('servers')  # list of server/username dicts
+			print(servers)
 
-				print(result.stdout)
-				return f'{file_path} executed successfully', 200  # send successful response message/code
-			else:
-				return 'File not Found', 404  # 404 error if file not found
+			for server in servers:  # for each dict...
+				external_webhook_url = f'https://exampleExternalUrl.com/{server["Server Name"]}'  # uniform request URL with dynamic endpoint
+				payload = server  # request body with 'Server Name' and 'Username' dict
+				headers = {'Content-Type': 'application/json'}
+
+				external_request = requests.post(external_webhook_url, json=payload, headers=headers)  # send the post request to taskmanager webhook
+				external_request.json()  # webhook response that we can send back to original request to this webhook
+
+			return 'servers received', 200
 		else:  # if IP address is not in whitelist return an unauthorized message/code
 			return 'Unauthorized machine', 401
 	except Exception as e:
