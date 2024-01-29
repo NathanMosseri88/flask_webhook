@@ -31,7 +31,15 @@ def webhook():  # run this function.
 			print(servers)
 
 			for server in servers:  # for each dict...
-				external_webhook_url = f'https://exampleExternalUrl.com/{server["Server Name"]}'  # uniform request URL with dynamic endpoint
+				# uniform request URL with dynamic endpoint - if possible
+				# external_webhook_url = f'https://exampleExternalUrl.com/{server["Server Name"]}'
+
+				# if ngrok subdomain routing is possible - builds on uniform URL idea
+				external_webhook_url = f'https://{server["Server Name"]}.exampleBaseDomain.com/{server["Username"]}'
+
+				# still dynamic but requires a domain for each server named after the server - more plausible
+				# external_webhook_url = f'https://{server["Server Name"]}.com/{server["Username"]}'
+
 				payload = server  # request body with 'Server Name' and 'Username' dict
 				headers = {'Content-Type': 'application/json'}
 
