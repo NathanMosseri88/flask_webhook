@@ -23,35 +23,37 @@ WHITE_LIST = get_secrets().get('whitelisted_IPs')
 def webhook():  # run this function.
 	try:
 		data = request.get_json()  # get the json body from request
-		print(data)
 		requesting_ip = data.get('ip')
+
 		if requesting_ip in WHITE_LIST:  # check if IP address in request is whitelisted
 
 			servers = data.get('servers')  # list of server/username dicts
 			print(servers)
-			responses = []
+			responses = []  # to log responses from external webhooks
+
 			for server in servers:  # for each dict...
-				# uniform request URL with dynamic endpoint - if possible
-				# external_webhook_url = f'https://exampleExternalUrl.com/{server["Server Name"]}'
 
 				# if ngrok subdomain routing is possible - builds on uniform URL idea
 				# external_webhook_url = f'https://{server["Server Name"]}.exampleBaseDomain.com/{server["Username"]}'
 				external_webhook_url = 'http://127.0.0.1:3000/manual_kickoff'
-
-				# still dynamic but requires a domain for each server named after the server - more plausible
-				# external_webhook_url = f'https://{server["Server Name"]}.com/{server["Username"]}'
 
 				payload = server  # request body with 'Server Name' and 'Username' dict
 				headers = {'Content-Type': 'application/json'}
 
 				# send the post request to taskmanager webhook
 				external_request = requests.post(external_webhook_url, json=payload, headers=headers)
-				response = external_request.json()  # webhook response that we can send back to original request to this webhook
+
+				# external response
+				response = external_request.json()
+				# add to array of responses from each webhook contacted
 				responses.append(response)
 
+			# return all responses back to client
 			return f'{responses}', 200
+
 		else:  # if IP address is not in whitelist return an unauthorized message/code
 			return 'Unauthorized machine', 401
+
 	except Exception as e:
 		return f'delegation Error: {str(e)}', 500  # return 500 (server error)
 
