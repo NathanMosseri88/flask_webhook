@@ -23,19 +23,20 @@ WHITE_LIST = get_secrets().get('whitelisted_IPs')
 def webhook():  # run this function.
 	try:
 		data = request.get_json()  # get the json body from request
-		# file = data.get('file')  # get the value of the key named file
+		print(data)
 		requesting_ip = data.get('ip')
 		if requesting_ip in WHITE_LIST:  # check if IP address in request is whitelisted
 
 			servers = data.get('servers')  # list of server/username dicts
 			print(servers)
-
+			responses = []
 			for server in servers:  # for each dict...
 				# uniform request URL with dynamic endpoint - if possible
 				# external_webhook_url = f'https://exampleExternalUrl.com/{server["Server Name"]}'
 
 				# if ngrok subdomain routing is possible - builds on uniform URL idea
-				external_webhook_url = f'https://{server["Server Name"]}.exampleBaseDomain.com/{server["Username"]}'
+				# external_webhook_url = f'https://{server["Server Name"]}.exampleBaseDomain.com/{server["Username"]}'
+				external_webhook_url = 'http://127.0.0.1:3000/manual_kickoff'
 
 				# still dynamic but requires a domain for each server named after the server - more plausible
 				# external_webhook_url = f'https://{server["Server Name"]}.com/{server["Username"]}'
@@ -45,13 +46,14 @@ def webhook():  # run this function.
 
 				# send the post request to taskmanager webhook
 				external_request = requests.post(external_webhook_url, json=payload, headers=headers)
-				external_request.json()  # webhook response that we can send back to original request to this webhook
+				response = external_request.json()  # webhook response that we can send back to original request to this webhook
+				responses.append(response)
 
-			return 'servers received', 200
+			return f'{responses}', 200
 		else:  # if IP address is not in whitelist return an unauthorized message/code
 			return 'Unauthorized machine', 401
 	except Exception as e:
-		return f'Error: {str(e)}', 500  # return 500 (server error)
+		return f'delegation Error: {str(e)}', 500  # return 500 (server error)
 
 
 if __name__ == '__main__':
