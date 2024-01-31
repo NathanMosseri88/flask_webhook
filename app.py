@@ -43,7 +43,8 @@ def webhook():  # run this function.
 				payload = server  # request body with 'Server Name' and 'Username' dict
 				headers = {'Content-Type': 'application/json'}
 
-				external_request = requests.post(external_webhook_url, json=payload, headers=headers)  # send the post request to taskmanager webhook
+				# send the post request to taskmanager webhook
+				external_request = requests.post(external_webhook_url, json=payload, headers=headers)
 				external_request.json()  # webhook response that we can send back to original request to this webhook
 
 			return 'servers received', 200
