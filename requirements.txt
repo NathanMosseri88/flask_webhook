@@ -1,0 +1,7 @@
+Flask==2.2.5
+ngrok==0.12.1
+mysql-connector==2.2.9
+mysql-connector-python==8.0.15
+requests
+urllib3==1.26.14
+cryptography

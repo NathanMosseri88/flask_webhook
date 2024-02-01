@@ -5,12 +5,28 @@ import os
 import json
 from cryptography.fernet import Fernet
 import ngrok
+import sys
+import getpass
+import platform
+
 
 app = Flask(__name__)
 
 
+def start_ngrok():
+	user = getpass.getuser()
+	server = platform.node()
+
+	delegation_file = f"C:\\Users\\{user}\\Desktop\\New Projects\\Nathan's\\delegation_webhook\\ngrok.yml"
+	try:
+		subprocess.run(f'C:\\Users\\{user}\\Desktop\\ngrok-v3-stable-windows-amd64\\ngrok start --config="{delegation_file}" delegation', shell=True, check=True)
+		# print(f'Ngrok Started')
+	except subprocess.CalledProcessError as e:
+		print(f"Error running ngrok: {e}")
+
+
 def get_secrets():
-	with open('secrets.json') as secrets_file:
+	with open('../secrets.json') as secrets_file:
 		secrets = json.load(secrets_file)
 
 		return secrets
@@ -48,16 +64,31 @@ def webhook():  # run this function.
 				response = external_request.json()
 				# add to array of responses from each webhook contacted
 				responses.append(response)
-
 			# return all responses back to client
 			return f'{responses}', 200
-
 		else:  # if IP address is not in whitelist return an unauthorized message/code
 			return 'Unauthorized machine', 401
-
 	except Exception as e:
 		return f'delegation Error: {str(e)}', 500  # return 500 (server error)
 
 
+@app.route('/manual_kickoff', methods=['POST'])
+def external_hook():
+	try:
+		data = request.get_json()
+		print(data)
+		username = data.get('Username')
+		server_name = data.get('Server Name')
+
+		print(f'{server_name} run with {username}')
+
+		# returns response and success code back to delegation webhook
+		return jsonify(f'{server_name} - {username} reached external'), 200
+	except Exception as e:
+		return f'external Error: {str(e)}', 500
+
+
 if __name__ == '__main__':
+	# start_ngrok()
 	app.run(debug=True)
+
