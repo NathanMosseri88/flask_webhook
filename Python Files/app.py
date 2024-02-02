@@ -13,16 +13,16 @@ import platform
 app = Flask(__name__)
 
 
-def start_ngrok():
-	user = getpass.getuser()
-	server = platform.node()
-
-	delegation_file = f"C:\\Users\\{user}\\Desktop\\New Projects\\Nathan's\\delegation_webhook\\ngrok.yml"
-	try:
-		subprocess.run(f'C:\\Users\\{user}\\Desktop\\ngrok-v3-stable-windows-amd64\\ngrok start --config="{delegation_file}" delegation', shell=True, check=True)
-		# print(f'Ngrok Started')
-	except subprocess.CalledProcessError as e:
-		print(f"Error running ngrok: {e}")
+# def start_ngrok():
+# 	user = getpass.getuser()
+# 	server = platform.node()
+#
+# 	delegation_file = f"C:\\Users\\{user}\\Desktop\\New Projects\\Nathan's\\delegation_webhook\\ngrok.yml"
+# 	try:
+# 		subprocess.run(f'C:\\Users\\{user}\\Desktop\\ngrok-v3-stable-windows-amd64\\ngrok start --config="{delegation_file}" delegation', shell=True, check=True)
+# 		# print(f'Ngrok Started')
+# 	except subprocess.CalledProcessError as e:
+# 		print(f"Error running ngrok: {e}")
 
 
 def get_secrets():
@@ -50,9 +50,9 @@ def webhook():  # run this function.
 
 			for server in servers:  # for each dict...
 
-				# if ngrok subdomain routing is possible - builds on uniform URL idea
-				# external_webhook_url = f'https://{server["Server Name"]}.exampleBaseDomain.com/{server["Username"]}'
-				external_webhook_url = 'http://127.0.0.1:3000/manual_kickoff'
+				# construct request url with server name param - ngrok will be set up with wildcard domain
+				# will allow for ngrok to rout requests properly based on dynamic subdomain
+				external_webhook_url = f'https://{server["Server Name"]}.example.com/manual_kickoff'
 
 				payload = server  # request body with 'Server Name' and 'Username' dict
 				headers = {'Content-Type': 'application/json'}
@@ -90,5 +90,5 @@ def external_hook():
 
 if __name__ == '__main__':
 	# start_ngrok()
-	app.run(debug=True)
+	app.run(debug=True, port=5000)
 

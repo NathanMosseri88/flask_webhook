@@ -1,13 +1,13 @@
 @echo off
 pip install virtualenv
 
-cd /d "C:\Users\%USERNAME%\Desktop\New Projects\Nathan's\delegation_webhook"
+cd /d "C:\Users\%USERNAME%\Desktop\New Projects\SimpleToWork\delegation_webhook"
 python -m virtualenv venv
 
 cd venv/scripts
 call activate.bat
 
-cd /d "C:\Users\%USERNAME%\Desktop\New Projects\Nathan's\delegation_webhook"
+cd /d "C:\Users\%USERNAME%\Desktop\New Projects\SimpleToWork\delegation_webhook"
 pip install -r requirements.txt
 
 IF EXIST "C:\Users\%USERNAME%\Desktop\ngrok-v3-stable-windows-amd64\ngrok.exe" (
