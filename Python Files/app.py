@@ -52,7 +52,7 @@ def webhook():  # run this function.
 
 				# construct request url with server name param - ngrok will be set up with wildcard domain
 				# will allow for ngrok to rout requests properly based on dynamic subdomain
-				external_webhook_url = f'https://{server["Server Name"]}.example.com/external'
+				external_webhook_url = f'https://{server["Server Name"]}.ngrok.io/external'
 
 				payload = server  # request body with 'Server Name' and 'Username' dict
 				headers = {'Content-Type': 'application/json'}
