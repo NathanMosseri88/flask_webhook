@@ -36,7 +36,7 @@ WHITE_LIST = get_secrets().get('whitelisted_IPs')
 
 
 # when this endpoint is hit...
-@app.route('/webhook', methods=['POST'])
+@app.route('/delegation', methods=['POST'])
 def webhook():  # run this function.
 	try:
 		data = request.get_json()  # get the json body from request
@@ -52,7 +52,7 @@ def webhook():  # run this function.
 
 				# construct request url with server name param - ngrok will be set up with wildcard domain
 				# will allow for ngrok to rout requests properly based on dynamic subdomain
-				external_webhook_url = f'https://{server["Server Name"]}.example.com/manual_kickoff'
+				external_webhook_url = f'https://{server["Server Name"]}.example.com/external'
 
 				payload = server  # request body with 'Server Name' and 'Username' dict
 				headers = {'Content-Type': 'application/json'}
@@ -72,7 +72,7 @@ def webhook():  # run this function.
 		return f'delegation Error: {str(e)}', 500  # return 500 (server error)
 
 
-@app.route('/manual_kickoff', methods=['POST'])
+@app.route('/external', methods=['POST'])
 def external_hook():
 	try:
 		data = request.get_json()
